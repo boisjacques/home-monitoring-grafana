@@ -12,23 +12,25 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
-#define MQTT_TOPIC_HUMIDITY "home/bme280/humidity"
-#define MQTT_TOPIC_TEMPERATURE "home/bme280/temperature"
-#define MQTT_TOPIC_STATE "home/bme280/status"
+#define MQTT_TOPIC_HUMIDITY "home/basement/humidity"
+#define MQTT_TOPIC_TEMPERATURE "home/basement/temperature"
+#define MQTT_TOPIC_PRESSURE "home/basement/pressure"
+#define MQTT_TOPIC_STATE "home/basement/status"
 #define MQTT_PUBLISH_DELAY 60000
-#define MQTT_CLIENT_ID "esp8266bme280"
+#define MQTT_CLIENT_ID "sensor-basement"
 
 #define BME280_ADDRESS 0x76
 
-const char *WIFI_SSID = "your-ssid";
-const char *WIFI_PASSWORD = "your-password";
+const char *WIFI_SSID = "Two Girls - One Router";
+const char *WIFI_PASSWORD = "94809730825940089603";
 
-const char *MQTT_SERVER = "homeserver";
+const char *MQTT_SERVER = "192.168.2.252";
 const char *MQTT_USER = "mqttuser"; // NULL for no authentication
 const char *MQTT_PASSWORD = "mqttpassword"; // NULL for no authentication
 
 float humidity;
 float temperature;
+float pressure;
 long lastMsgTime = 0;
 
 Adafruit_BME280 bme;
@@ -69,6 +71,7 @@ void loop() {
     bme.takeForcedMeasurement(); // has no effect in normal mode
     humidity = bme.readHumidity();
     temperature = bme.readTemperature();
+    pressure = bme.readPressure();
     if (isnan(humidity) || isnan(temperature)) {
       Serial.println("BME280 reading issues");
       return;
