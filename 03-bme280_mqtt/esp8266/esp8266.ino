@@ -12,6 +12,16 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
+#include <Adafruit_SSD1306.h>
+#include <Fonts/FreeSerif9pt7b.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+
 #define MQTT_TOPIC_HUMIDITY "home/basement/humidity"
 #define MQTT_TOPIC_TEMPERATURE "home/basement/temperature"
 #define MQTT_TOPIC_PRESSURE "home/basement/pressure"
@@ -41,10 +51,20 @@ void setup() {
   Serial.begin(115200);
   while (! Serial);
 
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    Serial.println("SSD1306 allocation failed");
+    while (1);
+  }
+
   if (!bme.begin(BME280_ADDRESS)) {
     Serial.println("Could not find a valid BME280 sensor, check wiring or BME-280 address!");
     while (1);
   }
+
+  //display.setFont(&FreeSerif9pt7b);
+  display.clearDisplay();
+  display.setTextSize(1);             
+  display.setTextColor(WHITE, BLUE);  
 
   // Use force mode so that the sensor returns to sleep mode when the measurement is finished
   bme.setSampling(Adafruit_BME280::MODE_FORCED,
@@ -76,7 +96,9 @@ void loop() {
       Serial.println("BME280 reading issues");
       return;
     }
-
+    display.setCursor(0,20);             
+    display.println(temperature);
+    display.display();
     // Publishing sensor data
     mqttPublish(MQTT_TOPIC_TEMPERATURE, temperature);
     mqttPublish(MQTT_TOPIC_HUMIDITY, humidity);
@@ -125,4 +147,16 @@ void mqttPublish(char *topic, float payload) {
   Serial.println(payload);
 
   mqttClient.publish(topic, String(payload).c_str(), true);
+}
+
+
+void setup() {
+  Serial.begin(115200);
+
+  
+  delay(2000);
+
+      
+  
+  delay(2000); 
 }
