@@ -98,12 +98,16 @@ void loop() {
     }
     display.clearDisplay();
     display.setCursor(0,0);
-    display.setTextSize(2);
+    display.setTextSize(3);
     //display.println("Schuppen");
-    display.println("Temp:");             
+    //display.print("T:");             
     display.print(temperature);
     display.println("C");
-    display.println("Humidity:");
+    display.setTextSize(1);
+    display.println("");
+   //display.println("");
+   //display.print("H:");
+    display.setTextSize(3);
     display.print(humidity);
     display.println("%");
     display.display();
